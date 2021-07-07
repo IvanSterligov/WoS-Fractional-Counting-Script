@@ -39,15 +39,18 @@ def fracount (data):
 
     acount = len(lnames) #считаем число авторов
     df['author_count'][data.name]=acount #вносим число авторов в соотв. колонку 
-
+    
     for x in lnames:   #цикл подсчета доли для каждого отдельного автора
             thisaffillist=[] #сюда складываем аффилиации данного автора
-            a_affilcount=sum(x in y for y in laffils) #считаем число аффилиаций на автора
+            a_affilcount=sum(x in y for y in laffils) #считаем число аффилиаций на автора            
             for y in laffils: #составляем список всех аффилиаций данного автора
                 if x in y:
                     thisaffillist.append(y)
-            if any(x in str(thisaffillist) for x in match): #проверяем, если ли нужная аффилиация у данного автора
-                counter = counter+(1/a_affilcount) #считаем долю за данного автора
+            for x in match: #считаем долю за данного автора для всех вариантов аффилиаций
+                for y in thisaffillist: #проверяем все аффилиации данного автора по очереди
+                    if x in str(y):                        
+                        counter = counter+(1/a_affilcount) 
+                        thisaffillist.remove(y) #убираем найденный вариант, чтобы избежать двойного учета, если совпадет с другим вариантом написания аффилиации
     return counter/acount #подсчитываем и возвращаем долю
 
 df['share'] = df.progress_apply(fracount, axis=1)
