@@ -22,24 +22,21 @@ def fracount (data):
 
     affcount=len(laffils) #cчитаем число уникальных аффилиаций
 
-    if affcount == 1: #случай, когда один автор и одна аффилиация
-        df['author_count'][data.name]=1 #вносим число авторов в соотв колонку
-        if any(x in rawaffils for x in match):  #проверяем, есть ли наша аффилиация, если да, доля = 1, иначе = 0
-            return 1
-        else:
-            return 0
-    
     rawnames = data['AF'] #загружаем список имен авторов
-     
     if rawnames == '':
         return 'no author names'
 
     lnames=rawnames.split(';') #получаем список имен авторов
     lnames = [x.strip(' ') for x in lnames] #убираем лишние пробелы
-
     acount = len(lnames) #считаем число авторов
     df['author_count'][data.name]=acount #вносим число авторов в соотв. колонку 
-    
+
+    if affcount == 1: #случай, когда одна аффилиация
+        if any(x in rawaffils for x in match):  #проверяем, есть ли наша аффилиация, если да, доля = 1, иначе = 0
+            return 1
+        else:
+            return 0
+ 
     for x in lnames:   #цикл подсчета доли для каждого отдельного автора
             thisaffillist=[] #сюда складываем аффилиации данного автора
             a_affilcount=sum(x in y for y in laffils) #считаем число аффилиаций на автора            
@@ -57,4 +54,4 @@ df['share'] = df.progress_apply(fracount, axis=1)
 print ('saving to c:\Ivan\savedrecs.csv and c:\Ivan\savedrecs.xlsx...')
 df.to_csv((r'c:\Ivan\savedrecs.csv'), sep='\t')
 df.to_excel(r'c:\Ivan\savedrecs.xlsx')
-print ('... done')  
+print ('... done')
